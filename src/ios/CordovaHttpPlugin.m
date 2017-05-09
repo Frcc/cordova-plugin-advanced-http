@@ -83,6 +83,16 @@
     [self setRequestSerializer: serializerName forManager: manager];
     [self setRequestHeaders: headers forManager: manager];
 
+    NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage]cookies];
+    NSString *JSESSIONID = @"";
+    for (NSHTTPCookie *cookie in cookies) {
+        if ([cookie.name isEqualToString:@"JSESSIONID"]) {
+            JSESSIONID = cookie.value;
+        }
+    }
+    NSString *cookieStr = [NSString stringWithFormat:@"JSESSIONID=%@;",JSESSIONID];
+    [manager.requestSerializer setValue:cookieStr forHTTPHeaderField:@"Cookie"];
+
     CordovaHttpPlugin* __weak weakSelf = self;
     manager.responseSerializer = [TextResponseSerializer serializer];
     [manager POST:url parameters:parameters progress:nil success:^(NSURLSessionTask *task, id responseObject) {
@@ -110,10 +120,58 @@
     [self setRequestSerializer: @"default" forManager: manager];
     [self setRequestHeaders: headers forManager: manager];
 
+    NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage]cookies];
+    NSString *JSESSIONID = @"";
+    for (NSHTTPCookie *cookie in cookies) {
+        if ([cookie.name isEqualToString:@"JSESSIONID"]) {
+            JSESSIONID = cookie.value;
+        }
+    }
+    NSString *cookieStr = [NSString stringWithFormat:@"JSESSIONID=%@;",JSESSIONID];
+    [manager.requestSerializer setValue:cookieStr forHTTPHeaderField:@"Cookie"];
+
     CordovaHttpPlugin* __weak weakSelf = self;
 
     manager.responseSerializer = [TextResponseSerializer serializer];
     [manager GET:url parameters:parameters progress:nil success:^(NSURLSessionTask *task, id responseObject) {
+        NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+        [self setResults: dictionary withTask: task];
+        [dictionary setObject:responseObject forKey:@"data"];
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dictionary];
+        [weakSelf.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    } failure:^(NSURLSessionTask *task, NSError *error) {
+        NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+        [self setResults: dictionary withTask: task];
+        NSString* errResponse = [[NSString alloc] initWithData:(NSData *)error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey] encoding:NSUTF8StringEncoding];
+        [dictionary setObject:errResponse forKey:@"error"];
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:dictionary];
+        [weakSelf.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
+- (void)patch:(CDVInvokedUrlCommand*)command {
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    manager.securityPolicy = securityPolicy;
+    NSString *url = [command.arguments objectAtIndex:0];
+    NSDictionary *parameters = [command.arguments objectAtIndex:1];
+    NSString *serializerName = [command.arguments objectAtIndex:2];
+    NSDictionary *headers = [command.arguments objectAtIndex:3];
+    [self setRequestSerializer: serializerName forManager: manager];
+    [self setRequestHeaders: headers forManager: manager];
+
+    NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage]cookies];
+    NSString *JSESSIONID = @"";
+    for (NSHTTPCookie *cookie in cookies) {
+        if ([cookie.name isEqualToString:@"JSESSIONID"]) {
+            JSESSIONID = cookie.value;
+        }
+    }
+    NSString *cookieStr = [NSString stringWithFormat:@"JSESSIONID=%@;",JSESSIONID];
+    [manager.requestSerializer setValue:cookieStr forHTTPHeaderField:@"Cookie"];
+
+    CordovaHttpPlugin* __weak weakSelf = self;
+    manager.responseSerializer = [TextResponseSerializer serializer];
+    [manager PATCH:url parameters:parameters success:^(NSURLSessionTask *task, id responseObject) {
         NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
         [self setResults: dictionary withTask: task];
         [dictionary setObject:responseObject forKey:@"data"];
@@ -138,6 +196,16 @@
     NSDictionary *headers = [command.arguments objectAtIndex:3];
     [self setRequestSerializer: serializerName forManager: manager];
     [self setRequestHeaders: headers forManager: manager];
+
+    NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage]cookies];
+    NSString *JSESSIONID = @"";
+    for (NSHTTPCookie *cookie in cookies) {
+        if ([cookie.name isEqualToString:@"JSESSIONID"]) {
+            JSESSIONID = cookie.value;
+        }
+    }
+    NSString *cookieStr = [NSString stringWithFormat:@"JSESSIONID=%@;",JSESSIONID];
+    [manager.requestSerializer setValue:cookieStr forHTTPHeaderField:@"Cookie"];
 
     CordovaHttpPlugin* __weak weakSelf = self;
     manager.responseSerializer = [TextResponseSerializer serializer];
@@ -166,6 +234,16 @@
     [self setRequestSerializer: @"default" forManager: manager];
     [self setRequestHeaders: headers forManager: manager];
 
+    NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage]cookies];
+    NSString *JSESSIONID = @"";
+    for (NSHTTPCookie *cookie in cookies) {
+        if ([cookie.name isEqualToString:@"JSESSIONID"]) {
+            JSESSIONID = cookie.value;
+        }
+    }
+    NSString *cookieStr = [NSString stringWithFormat:@"JSESSIONID=%@;",JSESSIONID];
+    [manager.requestSerializer setValue:cookieStr forHTTPHeaderField:@"Cookie"];
+
     CordovaHttpPlugin* __weak weakSelf = self;
 
     manager.responseSerializer = [TextResponseSerializer serializer];
@@ -192,6 +270,16 @@
     NSDictionary *parameters = [command.arguments objectAtIndex:1];
     NSDictionary *headers = [command.arguments objectAtIndex:2];
     [self setRequestHeaders: headers forManager: manager];
+
+    NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage]cookies];
+    NSString *JSESSIONID = @"";
+    for (NSHTTPCookie *cookie in cookies) {
+        if ([cookie.name isEqualToString:@"JSESSIONID"]) {
+            JSESSIONID = cookie.value;
+        }
+    }
+    NSString *cookieStr = [NSString stringWithFormat:@"JSESSIONID=%@;",JSESSIONID];
+    [manager.requestSerializer setValue:cookieStr forHTTPHeaderField:@"Cookie"];
 
     CordovaHttpPlugin* __weak weakSelf = self;
 
@@ -220,6 +308,16 @@
     NSDictionary *headers = [command.arguments objectAtIndex:2];
     NSString *filePath = [command.arguments objectAtIndex: 3];
     NSString *name = [command.arguments objectAtIndex: 4];
+
+    NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage]cookies];
+    NSString *JSESSIONID = @"";
+    for (NSHTTPCookie *cookie in cookies) {
+        if ([cookie.name isEqualToString:@"JSESSIONID"]) {
+            JSESSIONID = cookie.value;
+        }
+    }
+    NSString *cookieStr = [NSString stringWithFormat:@"JSESSIONID=%@;",JSESSIONID];
+    [manager.requestSerializer setValue:cookieStr forHTTPHeaderField:@"Cookie"];
 
     NSURL *fileURL = [NSURL URLWithString: filePath];
 
@@ -261,6 +359,16 @@
     NSDictionary *parameters = [command.arguments objectAtIndex:1];
     NSDictionary *headers = [command.arguments objectAtIndex:2];
     NSString *filePath = [command.arguments objectAtIndex: 3];
+
+    NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage]cookies];
+    NSString *JSESSIONID = @"";
+    for (NSHTTPCookie *cookie in cookies) {
+        if ([cookie.name isEqualToString:@"JSESSIONID"]) {
+            JSESSIONID = cookie.value;
+        }
+    }
+    NSString *cookieStr = [NSString stringWithFormat:@"JSESSIONID=%@;",JSESSIONID];
+    [manager.requestSerializer setValue:cookieStr forHTTPHeaderField:@"Cookie"];
 
     [self setRequestHeaders: headers forManager: manager];
 
